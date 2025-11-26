@@ -1,0 +1,13 @@
+# sources.yml - defines INPUT locations
+version: 2
+            # it is much more useful when getting data from multiple schema
+sources:
+  - name: raw_data
+    database: GP
+    schema: RAW               
+    tables:
+      - name: flights       # raw.flights
+        freshness:
+          warn_after: {count: 4, period: hour}
+          error_after: {count: 9, period: day}
+        loaded_at_field: INGESTION_TIME # it is converted to >>now()-max(ingestion_time) 

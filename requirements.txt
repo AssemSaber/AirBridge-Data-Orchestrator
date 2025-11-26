@@ -1,0 +1,7 @@
+# requirements.txt
+apache-airflow==3.0.0
+apache-airflow-providers-common-compat >=1.6.0
+apache-airflow-providers-apache-spark==4.1.0    #downgrade to spark 3.3.0 to be compatable with spark container
+apache-airflow-providers-snowflake==5.0.0 # The main Airflow provider
+snowflake-connector-python==3.8.0  # Python connector for Snowflake
+snowflake-sqlalchemy==1.5.0  #SQLAlchemy dialect for Snowflake (if using SQLAlchemy operations)

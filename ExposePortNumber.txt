@@ -1,0 +1,36 @@
+airflow-apiServer>>
+    http://localhost:8080
+
+schema-registry>>> to check schema-registry and there is also in kafka UI _schemas
+    curl http://localhost:8081/subjects
+
+spark-master>>
+    http://localhost:8082
+
+kafak-connect>>
+    http://localhost:8083
+
+    http://localhost:8083/connector-plugins >> all connectors you installed[source or sink], you see here 
+
+    localhost:8083/connectors >> [all connections you make ]
+kafka-ui>>
+    http://localhost:8085
+
+nifi>>
+    http://localhost:8086
+    
+flink>>
+    http://localhost:8087
+
+jupyter nootbook >>
+    http://localhost:8888
+
+grafana >>
+    http://localhost:3000
+
+namenode >>
+    http://localhost:50070
+
+datanode >>
+    http://localhost:50075
+    

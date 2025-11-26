@@ -1,0 +1,125 @@
+  version: 2
+
+models:
+  - name: fact_flights
+    columns:  
+      - name: destination_id
+        tests:
+          - relationships:
+              to: ref('dim_destination')
+              field: destination_id
+
+      - name: origin_id
+        tests:
+          - relationships:
+              to: ref('dim_origin')
+              field: origin_id
+
+      - name: status_id
+        tests:
+          - relationships:
+              to: ref('dim_flight_status')
+              field: status_id
+
+      - name: date_id
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+
+      - name: Scheduled_Departure_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: Actual_Departure_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: Wheels_Off_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: Wheels_On_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: Scheduled_Arrival_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: Actual_Arrival_Time_id
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: time_id
+
+      - name: TAXI_OUT_TIME
+        tests:
+          - is_positive
+
+      - name: TAXI_IN_TIME
+        tests:
+          - is_positive
+
+      - name: CARRIER_DELAY
+        tests:
+          - is_positive
+
+      - name: WEATHER_DELAY 
+        tests:
+          - is_positive
+
+      - name: NAS_DELAY
+        tests:
+          - is_positive
+
+      - name: SECURITY_DELAY
+        tests:
+          - is_positive
+
+      - name: LATE_AIRCRAFT_DELAY
+        tests:
+          - is_positive
+
+
+    # - name: stg_order_items # you must write mode name here
+    #   columns:
+    #     - name: product_id
+    #       tests:
+    #         - relationships:
+    #             to: ref('stg_products')
+    #             field: category_id
+
+
+
+    # - name: stg_customers # you must write mode name here
+    #   columns:
+    #     - name: id
+    #       tests:
+    #         - unique
+    #         - not_null
+
+
+
+
+    # - name : stg_products
+    #   columns:
+    #     - name: category_id
+    #       tests:
+    #         - unique
+    #         - not_null
+
+    #     - name: category
+    #       tests:
+    #         - accepted_values:
+    #             values: ['Electronics', 'Furniture', 'Accessories']
