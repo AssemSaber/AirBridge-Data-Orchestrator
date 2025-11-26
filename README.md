@@ -8,3 +8,7 @@ The platform is designed to support real-time monitoring, daily analytics, and e
       **Perform batch processing on large historical datasets (~7M rows && 35 columns)**
       **Produce clean dimensional models for analytics & machine learning**
       **Deliver live dashboards for decision-making**
+
+## <div>**Data platform**</div>
+
+    
