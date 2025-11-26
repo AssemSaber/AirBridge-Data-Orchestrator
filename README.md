@@ -8,7 +8,51 @@ The platform is designed to support real-time monitoring, daily analytics, and e
       **Perform batch processing on large historical datasets (~7M rows && 35 columns)**
       **Produce clean dimensional models for analytics & machine learning**
       **Deliver live dashboards for decision-making**
+-----
+## Data Source → Kaggle 
+- [Download Dataset](https://www.kaggle.com/datasets/hrishitpatil/flight-data-2024)
+----
+## Data dictionary about source
 
-## <div>**Data platform**</div>
+| **Column Name**     | **Description**                                 |
+| ------------------- | ----------------------------------------------- |
+| year                | Year of flight                                  |
+| month               | Month of flight (1–12)                          |
+| day_of_month        | Day of the month                                |
+| day_of_week         | Day of week (1=Monday … 7=Sunday)               |
+| fl_date             | Flight date (YYYY-MM-DD)                        |
+| op_unique_carrier   | Unique carrier code                             |
+| op_carrier_fl_num   | Flight number for reporting airline             |
+| origin              | Origin airport code                             |
+| origin_city_name    | Origin city name                                |
+| origin_state_nm     | Origin state name                               |
+| dest                | Destination airport code                        |
+| dest_city_name      | Destination city name                           |
+| dest_state_nm       | Destination state name                          |
+| crs_dep_time        | Scheduled departure time (local, hhmm)          |
+| dep_time            | Actual departure time (local, hhmm)             |
+| dep_delay           | Departure delay in minutes (negative if early)  |
+| taxi_out            | Taxi out time in minutes                        |
+| wheels_off          | Wheels-off time (local, hhmm)                   |
+| wheels_on           | Wheels-on time (local, hhmm)                    |
+| taxi_in             | Taxi in time in minutes                         |
+| crs_arr_time        | Scheduled arrival time (local, hhmm)            |
+| arr_time            | Actual arrival time (local, hhmm)               |
+| arr_delay           | Arrival delay in minutes (negative if early)    |
+| cancelled           | Cancelled flight indicator (0=No, 1=Yes)        |
+| cancellation_code   | Reason for cancellation (if cancelled)          |
+| diverted            | Diverted flight indicator (0=No, 1=Yes)         |
+| crs_elapsed_time    | Scheduled elapsed time in minutes               |
+| actual_elapsed_time | Actual elapsed time in minutes                  |
+| air_time            | Flight time in minutes                          |
+| distance            | Distance between origin and destination (miles) |
+| carrier_delay       | Carrier-related delay in minutes                |
+| weather_delay       | Weather-related delay in minutes                |
+| nas_delay           | National Air System delay in minutes            |
+| security_delay      | Security delay in minutes                       |
+| late_aircraft_delay | Late aircraft delay in minutes                  |
+
+## <div>**Data platform applied **</div>
+
 
     
