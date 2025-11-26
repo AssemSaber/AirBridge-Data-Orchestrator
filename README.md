@@ -68,11 +68,29 @@ The platform is designed to support real-time monitoring, daily analytics, and e
     - #### Processed real-time data is stored in Postgres for fast querying.
     - #### Grafana dashboards visualize the data to detect unusual patterns, such as increases in flight cancellations or the reasons for flight delays
     - Flow: MySQL CDC → Flink → Postgres → Grafana
+ 
+-------
+## Data modeling 
+ ![System Architecture photo](images/modeling_flights.png)
+-------
+## Data lineage in dbt
+ ![System Architecture photo](images/data_lineage_flight.jpeg)
+
+## 
 --------
 ## How to Run
 -----------
-## 1) Batch/Archival running 
+## 1) Batch/Archival running
+- run that shell script to run containers and establish connection between mysql and kafka-connect
+ ```
+  ./startApp
+ ```
+- access the mysql container 
 
+```
+     docker exec -it mysql mysql -u Assem -p123456789
+```
+- Run that command to grant Kafka Connect the necessary permissions
 ```
 create database GP;
 GRANT ALL PRIVILEGES ON GP.* TO 'Assem'@'%';
@@ -117,6 +135,30 @@ create table flights(
             late_aircraft_delay INT NOT NULL
 );
 ```
+- #### You need to set up MySQL Connect to run that script, which allows you to import large amounts of data into MySQL
+  ```
+  pip install mysql-connector-python
+    ```
+- #### Assume you downloaded the data from Kaggle. Create a folder named data, then place the downloaded files inside it.
+```
+ python3 sparkJops/import_mysql.py
+```
+- #### you have two choices overwrite or append, choose what you want to import with any number
+
+- #### Open your browser and write :
+```
+localhost:8085
+```
+
+---------
+
+
+
+
+
+
+
+
 
 
 
