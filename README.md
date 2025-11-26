@@ -53,7 +53,7 @@ The platform is designed to support real-time monitoring, daily analytics, and e
 | late_aircraft_delay | Late aircraft delay in minutes                  |
 -----
 ## <div>**Data platform**</div>
-![System Architecture photo](images/data_platform_flight.jpeg)
+![System Architecture photo](images/data_platform_flight.png)
 
 ## Architecture Overview
 ## The pipeline consists of two parallel flows:
@@ -148,14 +148,18 @@ create table flights(
 ```
 - #### you have two choices overwrite or append, choose what you want to import with any number
 
-- #### Open your browser and write :
+- #### Open your browser and write to see data in kafka :
 ```
 localhost:8085
 ```
+- #### run code pyspark code for structured streaming uploading to s3 bucket :
 
+```
+docker compose exec spark-master  spark-submit   --master spark://spark-master:7077   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.apache.commons:commons-pool2:2.12.0,io.delta:delta-core_2.12:2.2.0,org.apache.hadoop:hadoop-aws:3.3.6,com.amazonaws:aws-java-sdk-bundle:1.12.529   /opt/airflow/sparkJops/consumer.py
+```
 ---------
 
-
+ #### Everything is on the cloud, so you need to reconfigure it yourself according to your personal information like access key, username, or password of snowflake configuration.
 
 
 
