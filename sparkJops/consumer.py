@@ -12,8 +12,8 @@ spark = SparkSession.builder \
                 "io.delta:delta-core_2.12:2.2.0"         
                 "org.apache.commons:commons-pool2:2.12.0") \
         .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-        .config("spark.hadoop.fs.s3a.access.key", "AKIAQ6Z3CAROZUIIDEMG") \
-        .config("spark.hadoop.fs.s3a.secret.key", "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") \
+        .config("spark.hadoop.fs.s3a.access.key", "********") \
+        .config("spark.hadoop.fs.s3a.secret.key", "********") \
         .config("spark.hadoop.fs.s3a.endpoint", "s3.eu-north-1.amazonaws.com") \
         .config("spark.hadoop.fs.s3a.path.style.access", "true") \
         .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
