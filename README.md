@@ -52,7 +52,6 @@ The platform is designed to support real-time monitoring, daily analytics, and e
 | security_delay      | Security delay in minutes                       |
 | late_aircraft_delay | Late aircraft delay in minutes                  |
 
-## <div>**Data platform applied **</div>
-
-
+## <div>**Data platform**</div>
+   - ![System Architecture photo](images/data_platform_flight.jpeg)
     
