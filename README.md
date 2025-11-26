@@ -75,6 +75,9 @@ The platform is designed to support real-time monitoring, daily analytics, and e
 -------
 ## Data lineage in dbt
  ![System Architecture photo](images/data_lineage_flight.jpeg)
+ ------
+##  After running the DAG successfully
+ ![System Architecture photo](images/scheduling_flights.png)
 
 ## 
 --------
