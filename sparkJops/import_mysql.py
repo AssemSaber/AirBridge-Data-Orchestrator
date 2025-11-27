@@ -2,7 +2,7 @@ import csv
 import mysql.connector
 
 # -----------------------------
-# CONFIG     python3 sparkJops/SIC_GP/import_mysql.py 
+# CONFIG     python3 sparkJops/import_mysql.py 
 # -----------------------------
 
 DB_HOST = "localhost"
@@ -10,7 +10,8 @@ DB_USER = "Assem"
 DB_PASSWORD = "123456789"
 DB_NAME = "GP"
 TABLE_NAME = "flights"
-CSV_FILE = "data/flight_data_2024_sample.csv"
+CSV_FILE = "data/flight_data_2024.csv"
+BATCH_SIZE = 5000  # Insert 5000 rows at a time
 # -----------------------------
 
 def connect_db():
@@ -25,41 +26,41 @@ def create_table(cursor):
     cursor.execute(f"""
         CREATE TABLE {TABLE_NAME} (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            year BIGINT NOT NULL,
-            month BIGINT NOT NULL,
-            day_of_month BIGINT NOT NULL,
-            day_of_week BIGINT NOT NULL,
-            fl_date DATETIME NOT NULL,
-            op_unique_carrier VARCHAR(20) NOT NULL,
-            op_carrier_fl_num DOUBLE NOT NULL,
-            origin VARCHAR(10) NOT NULL,
-            origin_city_name VARCHAR(255) NOT NULL,
-            origin_state_nm VARCHAR(255) NOT NULL,
-            dest VARCHAR(10) NOT NULL,
-            dest_city_name VARCHAR(255) NOT NULL,
-            dest_state_nm VARCHAR(255) NOT NULL,
-            crs_dep_time BIGINT NOT NULL,
+            year BIGINT   NULL,
+            month BIGINT   NULL,
+            day_of_month BIGINT   NULL,
+            day_of_week BIGINT   NULL,
+            fl_date DATETIME   NULL,
+            op_unique_carrier VARCHAR(20)   NULL,
+            op_carrier_fl_num DOUBLE   NULL,
+            origin VARCHAR(10)   NULL,
+            origin_city_name VARCHAR(255)   NULL,
+            origin_state_nm VARCHAR(255)   NULL,
+            dest VARCHAR(10)   NULL,
+            dest_city_name VARCHAR(255)   NULL,
+            dest_state_nm VARCHAR(255)   NULL,
+            crs_dep_time BIGINT   NULL,
             dep_time DOUBLE NULL,
             dep_delay DOUBLE NULL,
             taxi_out DOUBLE NULL,
             wheels_off DOUBLE NULL,
             wheels_on DOUBLE NULL,
             taxi_in DOUBLE NULL,
-            crs_arr_time BIGINT NOT NULL,
+            crs_arr_time BIGINT  NULL,
             arr_time DOUBLE NULL,
             arr_delay DOUBLE NULL,
-            cancelled INT NOT NULL,
+            cancelled INT   NULL,
             cancellation_code VARCHAR(10) NULL,
-            diverted INT NOT NULL,
-            crs_elapsed_time DOUBLE NOT NULL,
+            diverted INT   NULL,
+            crs_elapsed_time DOUBLE  NULL,
             actual_elapsed_time DOUBLE NULL,
             air_time DOUBLE NULL,
-            distance DOUBLE NOT NULL,
-            carrier_delay INT NOT NULL,
-            weather_delay INT NOT NULL,
-            nas_delay INT NOT NULL,
-            security_delay INT NOT NULL,
-            late_aircraft_delay INT NOT NULL
+            distance DOUBLE  NULL,
+            carrier_delay INT  NULL,
+            weather_delay INT  NULL,
+            nas_delay INT  NULL,
+            security_delay INT  NULL,
+            late_aircraft_delay INT  NULL
         );
     """)
 
@@ -69,7 +70,6 @@ def get_columns(cursor):
     return columns
 
 def clean_row(row):
-    
     new_row = []
     for val in row:
         if val.strip() == "" or val.strip().upper() in ("NA", "N/A"):
@@ -77,6 +77,31 @@ def clean_row(row):
         else:
             new_row.append(val)
     return new_row
+
+def insert_in_batches(cursor, conn, sql, rows, batch_size):
+    """Insert rows in batches to avoid max_allowed_packet error"""
+    total_rows = len(rows)
+    total_inserted = 0
+    
+    print(f"[INFO] Starting batch insertion of {total_rows} rows (batch size: {batch_size})...")
+    
+    for i in range(0, total_rows, batch_size):
+        batch = rows[i:i + batch_size]
+        try:
+            cursor.executemany(sql, batch)
+            conn.commit()
+            total_inserted += len(batch)
+            
+            # Progress indicator every 50,000 rows
+            if total_inserted % 50000 == 0 or total_inserted == total_rows:
+                print(f"[PROGRESS] {total_inserted}/{total_rows} rows inserted ({total_inserted/total_rows*100:.1f}%)")
+        
+        except Exception as e:
+            print(f"[ERROR] Failed to insert batch starting at row {i}: {e}")
+            conn.rollback()
+            raise
+    
+    return total_inserted
 
 def main():
     # 1. Connect to DB
@@ -124,6 +149,7 @@ def main():
             print("Enter a valid integer.")
 
     # 6. Read CSV and clean rows
+    print(f"[INFO] Reading CSV file...")
     with open(CSV_FILE, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
         headers = next(reader)
@@ -135,15 +161,17 @@ def main():
             if len(selected_rows) >= n:
                 break
             selected_rows.append(clean_row(row))
+    
+    print(f"[INFO] Finished reading {len(selected_rows)} rows from CSV.")
 
-    # 7. Insert rows
+    # 7. Insert rows in batches
     placeholders = ", ".join(["%s"] * len(columns))
     columns_str = ", ".join([f"`{c}`" for c in columns])
     sql = f"INSERT INTO {TABLE_NAME} ({columns_str}) VALUES ({placeholders})"
-    cursor.executemany(sql, selected_rows)
-    conn.commit()
+    
+    total_inserted = insert_in_batches(cursor, conn, sql, selected_rows, BATCH_SIZE)
 
-    print(f"\n[SUCCESS] Imported {len(selected_rows)} rows into '{TABLE_NAME}'.")
+    print(f"\n[SUCCESS] Imported {total_inserted} rows into '{TABLE_NAME}'.")
 
     cursor.close()
     conn.close()

@@ -574,12 +574,16 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_USER= 
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
     volumes:
       - grafana-storage:/var/lib/grafana
-    network_mode: "host"  # allowing the container to use network of the host like >> like localhost:9090 inside the container  
+
+    networks:
+      - airflow
+    # network_mode: "host"  # allowing the container to use network of the host like >> like localhost:9090 inside the container  
+
 # ================================
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
@@ -737,67 +741,67 @@ services:
 
   # Flink JobManager
   # =============================== docker exec faf flink run -py /opt/flink/python_jobs/kafka-python/flinkist_of_all.py
-  # jobmanager:
-  #   build:
-  #     context: ./flink # Dockerfile here should install PyFlink + connectors
-  #   ports:
-  #     - "8087:8081" # Flink Web UI
-  #   command: jobmanager
-  #   environment:
-  #     - |
-  #       FLINK_PROPERTIES=
-  #       jobmanager.rpc.address: jobmanager        
-  #   volumes:
-  #     # - ./flink/connectors:/opt/flink/lib  
-  #     - ./flink/sql_jobs:/opt/flink/sql_jobs
-  #     - ./flink/python_jobs:/opt/flink/python_jobs
-  #     - ./connectors/flink-connector-jdbc-core-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-core-4.0.0-2.0.jar # connector for postsql
-  #     - ./connectors/flink-connector-jdbc-postgres-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-postgres-4.0.0-2.0.jar
-  #     - ./connectors/postgresql-42.7.3.jar:/opt/flink/lib/postgresql-42.7.3.jar
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1'
-  #         memory: 1.5g
-  #       reservations:
-  #         cpus: '0.5'
-  #         memory: 1g
-  #   networks:
-  #     - airflow
+  jobmanager:
+    build:
+      context: ./flink # Dockerfile here should install PyFlink + connectors
+    ports:
+      - "8087:8081" # Flink Web UI
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager        
+    volumes:
+      # - ./flink/connectors:/opt/flink/lib  
+      - ./flink/sql_jobs:/opt/flink/sql_jobs
+      - ./flink/python_jobs:/opt/flink/python_jobs
+      - ./connectors/flink-connector-jdbc-core-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-core-4.0.0-2.0.jar # connector for postsql
+      - ./connectors/flink-connector-jdbc-postgres-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-postgres-4.0.0-2.0.jar
+      - ./connectors/postgresql-42.7.3.jar:/opt/flink/lib/postgresql-42.7.3.jar
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1.5g
+        reservations:
+          cpus: '0.5'
+          memory: 1g
+    networks:
+      - airflow
   # # ===============================
   # # Flink TaskManager
   # # ===============================
-  # taskmanager:
-  #   build:
-  #     context: ./flink
-  #   depends_on:
-  #     - jobmanager
-  #   command: taskmanager
-  #   environment:
-  #     - |
-  #       FLINK_PROPERTIES=
-  #       jobmanager.rpc.address: jobmanager
-  #       taskmanager.numberOfTaskSlots: 2 
-  #   volumes:
-  #     # - ./flink/connectors:/opt/flink/lib
-  #     - ./flink/sql_jobs:/opt/flink/sql_jobs
-  #     - ./flink/python_jobs:/opt/flink/python_jobs
-  #     - ./connectors/flink-connector-jdbc-core-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-core-4.0.0-2.0.jar # connector for postsql
-  #     - ./connectors/flink-connector-jdbc-postgres-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-postgres-4.0.0-2.0.jar
-  #     - ./connectors/postgresql-42.7.3.jar:/opt/flink/lib/postgresql-42.7.3.jar
+  taskmanager:
+    build:
+      context: ./flink
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 4 
+    volumes:
+      # - ./flink/connectors:/opt/flink/lib
+      - ./flink/sql_jobs:/opt/flink/sql_jobs
+      - ./flink/python_jobs:/opt/flink/python_jobs
+      - ./connectors/flink-connector-jdbc-core-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-core-4.0.0-2.0.jar # connector for postsql
+      - ./connectors/flink-connector-jdbc-postgres-4.0.0-2.0.jar:/opt/flink/lib/flink-connector-jdbc-postgres-4.0.0-2.0.jar
+      - ./connectors/postgresql-42.7.3.jar:/opt/flink/lib/postgresql-42.7.3.jar
 
-  #     # - ./connectors:/opt/flink/lib/ # connector # for postsql
 
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1'
-  #         memory: 2g
-  #       reservations:
-  #         cpus: '0.5'
-  #         memory: 1g
-  #   networks:
-  #     - airflow
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2g
+        reservations:
+          cpus: '0.5'
+          memory: 1g
+    networks:
+      - airflow
+
 volumes:
   postgres-db-volume:
   spark-data:
