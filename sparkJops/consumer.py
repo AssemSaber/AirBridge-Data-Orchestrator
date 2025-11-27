@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
+import pyspark.sql.functions as F
 from pyspark.sql.types import *
 
 
@@ -19,18 +19,15 @@ spark = SparkSession.builder \
         .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
         .config("spark.hadoop.fs.s3a.fast.upload", "true") \
         .getOrCreate()   
-                                #docker compose exec spark-master  spark-submit   --master spark://spark-master:7077   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.apache.commons:commons-pool2:2.12.0,io.delta:delta-core_2.12:2.2.0,org.apache.hadoop:hadoop-aws:3.3.6,com.amazonaws:aws-java-sdk-bundle:1.12.529   /opt/airflow/sparkJops/SIC_GP/consumer.py
+                                # docker compose exec spark-master  spark-submit   --master spark://spark-master:7077   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.apache.commons:commons-pool2:2.12.0,io.delta:delta-core_2.12:2.2.0,org.apache.hadoop:hadoop-aws:3.3.6,com.amazonaws:aws-java-sdk-bundle:1.12.529   /opt/airflow/sparkJops/consumer.py
                                 # org.apache.spark:spark-avro_2.12:3.3.0 >> that is for avro if u want add in spark.jar.packages and also in spark-submit
 
 spark.sparkContext.setLogLevel("ERROR")
 
 
-
 mySchema = StructType([
     StructField("schema", StringType(), True),
     StructField("payload", StructType([
-
-    
         StructField("id", LongType(), True),
         StructField("year", LongType(), True),
         StructField("month", LongType(), True),
@@ -70,88 +67,104 @@ mySchema = StructType([
         StructField("__deleted", StringType(), True),
         StructField("__op", StringType(), True),
         StructField("__source_ts_ms", LongType(), True)
-    ]),True)
+    ]), True)
 ])
+
 
 topics = ["mysql-server.GP.flights"]
 
-readStreaming = spark.readStream.format("kafka") \
+df_raw = spark.readStream.format("kafka") \
     .option("kafka.bootstrap.servers", "kafka:9092") \
     .option("subscribe", ",".join(topics)) \
+    .option("failOnDataLoss", "false")\
     .option("startingOffsets", "earliest") \
     .load()
 
-selected = readStreaming.selectExpr(
-    "CAST(value AS STRING) as value"
-)
 
-# extractedUsers=selected.select(f.from_json(f.col("value").cast("string"),mySchema).alias("data"))\
+df_parsed = df_raw.select(F.col("value").cast("string").alias("value")) \
+    .withColumn("jsonData", F.from_json("value", mySchema)) \
+    .select("jsonData.*") \
+    .withColumn("failure_count", F.lit(0))
 
 
-extractedFlights = (
-    selected.select(f.from_json(f.col("value").cast("string"), mySchema).alias("data"))\
-        .select(
-            f.col("data.payload.id").alias("id"),
-            f.col("data.payload.year").alias("year"),
-            f.col("data.payload.month").alias("month"),
-            f.col("data.payload.day_of_month").alias("day_of_month"),
-            f.col("data.payload.day_of_week").alias("day_of_week"),
-            f.col("data.payload.fl_date").alias("fl_date"),
-            f.col("data.payload.op_unique_carrier").alias("op_unique_carrier"),
-            f.col("data.payload.op_carrier_fl_num").alias("op_carrier_fl_num"),
-            f.col("data.payload.origin").alias("origin"),
-            f.col("data.payload.origin_city_name").alias("origin_city_name"),
-            f.col("data.payload.origin_state_nm").alias("origin_state_nm"),
-            f.col("data.payload.dest").alias("dest"),
-            f.col("data.payload.dest_city_name").alias("dest_city_name"),
-            f.col("data.payload.dest_state_nm").alias("dest_state_nm"),
-            f.col("data.payload.crs_dep_time").alias("crs_dep_time"),
-            f.col("data.payload.dep_time").alias("dep_time"),
-            f.col("data.payload.dep_delay").alias("dep_delay"),
-            f.col("data.payload.taxi_out").alias("taxi_out"),
-            f.col("data.payload.wheels_off").alias("wheels_off"),
-            f.col("data.payload.wheels_on").alias("wheels_on"),
-            f.col("data.payload.taxi_in").alias("taxi_in"),
-            f.col("data.payload.crs_arr_time").alias("crs_arr_time"),
-            f.col("data.payload.arr_time").alias("arr_time"),
-            f.col("data.payload.arr_delay").alias("arr_delay"),
-            f.col("data.payload.cancelled").alias("cancelled"),
-            f.col("data.payload.cancellation_code").alias("cancellation_code"),
-            f.col("data.payload.diverted").alias("diverted"),
-            f.col("data.payload.crs_elapsed_time").alias("crs_elapsed_time"),
-            f.col("data.payload.actual_elapsed_time").alias("actual_elapsed_time"),
-            f.col("data.payload.air_time").alias("air_time"),
-            f.col("data.payload.distance").alias("distance"),
-            f.col("data.payload.carrier_delay").alias("carrier_delay"),
-            f.col("data.payload.weather_delay").alias("weather_delay"),
-            f.col("data.payload.nas_delay").alias("nas_delay"),
-            f.col("data.payload.security_delay").alias("security_delay"),
-            f.col("data.payload.late_aircraft_delay").alias("late_aircraft_delay"),
-            f.col("data.payload.__deleted").cast("boolean").alias("isDelete"),
-            f.col("data.payload.__op").alias("operation"),
-            f.col("data.payload.__source_ts_ms").alias("event_time"),
-            f.current_timestamp().alias("ingestion_time")
+def extract_payload(df):
+    try:
+        return df.select(
+            F.col("payload.id").alias("id"),
+            F.col("payload.year").alias("year"),
+            F.col("payload.month").alias("month"),
+            F.col("payload.day_of_month").alias("day_of_month"),
+            F.col("payload.day_of_week").alias("day_of_week"),
+            F.col("payload.fl_date").alias("fl_date"),
+            F.col("payload.op_unique_carrier").alias("op_unique_carrier"),
+            F.col("payload.op_carrier_fl_num").alias("op_carrier_fl_num"),
+            F.col("payload.origin").alias("origin"),
+            F.col("payload.origin_city_name").alias("origin_city_name"),
+            F.col("payload.origin_state_nm").alias("origin_state_nm"),
+            F.col("payload.dest").alias("dest"),
+            F.col("payload.dest_city_name").alias("dest_city_name"),
+            F.col("payload.dest_state_nm").alias("dest_state_nm"),
+            F.col("payload.crs_dep_time").alias("crs_dep_time"),
+            F.col("payload.dep_time").alias("dep_time"),
+            F.col("payload.dep_delay").alias("dep_delay"),
+            F.col("payload.taxi_out").alias("taxi_out"),
+            F.col("payload.wheels_off").alias("wheels_off"),
+            F.col("payload.wheels_on").alias("wheels_on"),
+            F.col("payload.taxi_in").alias("taxi_in"),
+            F.col("payload.crs_arr_time").alias("crs_arr_time"),
+            F.col("payload.arr_time").alias("arr_time"),
+            F.col("payload.arr_delay").alias("arr_delay"),
+            F.col("payload.cancelled").alias("cancelled"),
+            F.col("payload.cancellation_code").alias("cancellation_code"),
+            F.col("payload.diverted").alias("diverted"),
+            F.col("payload.crs_elapsed_time").alias("crs_elapsed_time"),
+            F.col("payload.actual_elapsed_time").alias("actual_elapsed_time"),
+            F.col("payload.air_time").alias("air_time"),
+            F.col("payload.distance").alias("distance"),
+            F.col("payload.carrier_delay").alias("carrier_delay"),
+            F.col("payload.weather_delay").alias("weather_delay"),
+            F.col("payload.nas_delay").alias("nas_delay"),
+            F.col("payload.security_delay").alias("security_delay"),
+            F.col("payload.late_aircraft_delay").alias("late_aircraft_delay"),
+            F.col("payload.__deleted").cast("boolean").alias("isDelete"),
+            F.col("payload.__op").alias("operation"),
+            F.col("payload.__source_ts_ms").alias("event_time"),
+            F.current_timestamp().alias("ingestion_time"),
+            F.col("failure_count")
         )
-)
+    except:
+        # If parsing fails, increment failure_count
+        return df.withColumn("failure_count", F.col("failure_count") + 1)
+
+df_clean = extract_payload(df_parsed)
 
 
+df_success = df_clean.filter(F.col("failure_count") < 3)
+df_dlq     = df_clean.filter(F.col("failure_count") >= 3) \
+    .selectExpr("to_json(struct(*)) AS value")  # Kafka needs 'value' column
 
 
-        #to console
-extractedFlights.writeStream \
+# write to s3 in case of successed processing
+df_success.writeStream \
     .format("parquet") \
     .option("path", "s3a://kafka-staging-abdelrahman-2025/kafka/flights") \
     .option("checkpointLocation", "s3a://kafka-staging-abdelrahman-2025/kafka/checkpoints/flights") \
     .outputMode("append") \
     .trigger(processingTime="3 seconds") \
-    .start() \
-    .awaitTermination()
+    .start()
 
-    
-
+#  Write DLQ to Kafka that rite to s3 in case of failed processing more than 3 times
+# -----------------------------
+df_dlq.writeStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "kafka:9092") \
+    .option("topic", "flight-data-dlq") \
+    .option("checkpointLocation", "s3a://kafka-staging-abdelrahman-2025/kafka/checkpoints/dlq") \
+    .outputMode("append") \
+    .trigger(processingTime="3 seconds") \
+    .start()
 
 spark.streams.awaitAnyTermination()
-
 
 # ---------+-------------------+--------+--------+-------------+-------------+---------+--------------+-------------------+--------+---------+-------------+--------------------+
 # | id|year|month|day_of_month|day_of_week|      fl_date|op_unique_carrier|op_carrier_fl_num|origin|    origin_city_name|origin_state_nm|dest|      dest_city_name| dest_state_nm|crs_dep_time|dep_time|dep_delay|taxi_out|wheels_off|wheels_on|taxi_in|crs_arr_time|arr_time|arr_delay|cancelled|cancellation_code|diverted|crs_elapsed_time|actual_elapsed_time|air_time|distance|carrier_delay|weather_delay|nas_delay|security_delay|late_aircraft_delay|isDelete|operation|   event_time|      ingestion_time|
