@@ -80,7 +80,14 @@ The platform is designed to support real-time monitoring, daily analytics, and e
 ##  After running the DAG successfully
  ![System Architecture photo](images/scheduling_flights.png)
 
-## 
+## Power BI Dashboard
+-    ### Business Scenario
+      -    ### **The aviation team needed a clear way to monitor flight performance, delays, cancellations, and overall operational efficiency.**
+      -    ### **The existing reports were manually created, not updated in real-time, and didn’t provide actionable insights.**    
+-    ### This project features an interactive Power BI dashboard developed to analyze business performance and provide actionable insights. As a Data Analyst, my work included:
+-    ### Building a data model with proper relationships and star-schema principles
+-    ### Creating DAX measures to calculate KPIs such as Departure delay, Arrival Delay, and security Delay..etc
+-    ### Designing interactive visuals with filters, slicers, tooltips
 --------
 ## How to Run
 -----------
