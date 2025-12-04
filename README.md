@@ -80,14 +80,20 @@ The platform is designed to support real-time monitoring, daily analytics, and e
 ##  After running the DAG successfully
  ![System Architecture photo](images/scheduling_flights.png)
 
-## Power BI Dashboard
+## **Power BI Dashboard**
 -    ### Business Scenario
-      -    ### **The aviation team needed a clear way to monitor flight performance, delays, cancellations, and overall operational efficiency.**
-      -    ### **The existing reports were manually created, not updated in real-time, and didn’t provide actionable insights.**    
--    ### This project features an interactive Power BI dashboard developed to analyze business performance and provide actionable insights. As a Data Analyst, my work included:
--    ### Building a data model with proper relationships and star-schema principles
--    ### Creating DAX measures to calculate KPIs such as Departure delay, Arrival Delay, and security Delay..etc
--    ### Designing interactive visuals with filters, slicers, tooltips
+      -    ### The aviation operations team was struggling to monitor daily flight activities across multiple airports. Key performance indicators—such as departure delays, arrival                 delays, cancellations, and security-related disruptions—were being tracked manually in spreadsheets.
+-    ### Dashboard Overview
+      - #### Interactive analytics platform: The dashboard provides a centralized, real-time view of flight performance, enabling operational teams to monitor and analyze key metrics efficiently.
+      - #### Star-schema data model: A well-structured data model was built using fact and dimension tables with proper relationships to optimize performance and enable flexible reporting.
+ - ### KPI calculation using DAX: Custom DAX measures were created to compute essential KPIs such as:
+    - #### Departure Delay
+    - #### Arrival Delay
+    - #### Security Delay
+---------
+ ![System Architecture photo](images/overview_1.png)
+ ![System Architecture photo](images/filter_1.png)
+ ![System Architecture photo](images/filter_2.png)
 --------
 ## How to Run
 -----------
@@ -160,6 +166,8 @@ create table flights(
 ```
 localhost:8085
 ```
+![System Architecture photo](images/kafka-data.jpeg)
+
 - #### run code pyspark code for structured streaming uploading to s3 bucket :
 
 ```
