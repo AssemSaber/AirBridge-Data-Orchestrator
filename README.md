@@ -1,6 +1,5 @@
 # <div>**Project Overview**</div>
-- **The Flight Data Platform is a full end-to-end data engineering project that ingests, processes, analyzes, and visualizes U.S. flight operations and delay data using a hybrid (batch + real-time) architecture.
-The platform is designed to support real-time monitoring, daily analytics, and enterprise-grade data modeling using modern tools such as Kafka, Spark, Flink, Airflow, Snowflake, dbt, Power BI, and Grafana.**
+- **This project replicates an enterprise-level aviation analytics system, providing airlines and operations teams with real-time visibility into flight delays, on-time performance, cancellations, and airport congestion. It demonstrates how modern data engineering workflows transform raw batch and streaming data into actionable insights for operational efficiency.**
 
 - **Objectives**
     - **To build a scalable data platform that can:**
@@ -71,7 +70,7 @@ The platform is designed to support real-time monitoring, daily analytics, and e
     - Flow: MySQL CDC → Flink → Postgres → Grafana
  
 -------
-## Data modeling 
+## Data modeling ( Star Schema ) 
  ![System Architecture photo](images/modeling_flights.png)
 -------
 ## Data lineage in dbt
@@ -81,12 +80,12 @@ The platform is designed to support real-time monitoring, daily analytics, and e
  ![System Architecture photo](images/scheduling_flights.png)
 
 ## **Power BI Dashboard**
--    ### Business Scenario
-      -    ### The aviation operations team was struggling to monitor daily flight activities across multiple airports. Key performance indicators—such as departure delays, arrival                 delays, cancellations, and security-related disruptions—were being tracked manually in spreadsheets.
--    ### Dashboard Overview
-      - #### Interactive analytics platform: The dashboard provides a centralized, real-time view of flight performance, enabling operational teams to monitor and analyze key metrics efficiently.
-      - #### Star-schema data model: A well-structured data model was built using fact and dimension tables with proper relationships to optimize performance and enable flexible reporting.
- - ### KPI calculation using DAX: Custom DAX measures were created to compute essential KPIs such as:
+-    ## Business Scenario
+      -    ### Centralized, interactive analytics platform:
+             #### The Power BI dashboard delivers a unified, real-time view of flight performance, allowing operations teams to monitor trends, detect anomalies, and take action quickly. Users can filter by                    airline, airport, date, and delay type to uncover insights instantly.
+-    ## Optimized star-schema data model:
+      - #### A robust star-schema model was designed using fact and dimension tables to ensure fast query performance, accurate aggregations, and scalable analytics. The model supports flexible slicing and dicing across airports, carriers, routes, and time.
+ - ### Advanced KPI calculations using DAX:
     - #### Departure Delay
     - #### Arrival Delay
     - #### Security Delay
