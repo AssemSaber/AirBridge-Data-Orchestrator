@@ -19,7 +19,7 @@
 - [Data lineage in dbt](#data-lineage-in-dbt)
 - [After running the DAG successfully](#after-running-the-dag-successfully)
 - [Power BI Dashboard](#power-bi-dashboard)
-- [Video → Demo](#video--demo)
+- [Video → Demo](#video-demo)
 - [How to Run](#how-to-run)
 
 -----
