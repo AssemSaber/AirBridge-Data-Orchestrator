@@ -15,7 +15,7 @@
 - [Data Source](#data-source)
 - [Data dictionary about source](#data-dictionary-about-source)
 - [Data platform](#data-platform)
-- [Data modeling (Star Schema)](#data-modeling-star-schema)
+- [Data modeling (Star Schema)](#data-modeling--star-schema--)
 - [Data lineage in dbt](#data-lineage-in-dbt)
 - [After running the DAG successfully](#after-running-the-dag-successfully)
 - [Power BI Dashboard](#power-bi-dashboard)
