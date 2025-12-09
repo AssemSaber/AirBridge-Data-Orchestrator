@@ -1,4 +1,4 @@
-# <div>**Project Overview**</div>
+# **Project Overview**
 - **This project replicates an enterprise-level aviation analytics system, providing airlines and operations teams with real-time visibility into flight delays, on-time performance, cancellations, and airport congestion. It demonstrates how modern data engineering workflows transform raw batch and streaming data into actionable insights for operational efficiency.**
 
 - **Objectives**
@@ -7,9 +7,24 @@
       **Perform batch processing on large historical datasets (~7M rows && 35 columns)**
       **Produce clean dimensional models for analytics & machine learning**
       **Deliver live dashboards for decision-making**
+
+------
+# Table of Contents
+
+- [Project Overview](#project-overview)
+- [Data Source](#data-source)
+- [Data dictionary about source](#data-dictionary-about-source)
+- [Data platform](#data-platform)
+- [Data modeling (Star Schema)](#data-modeling-star-schema)
+- [Data lineage in dbt](#data-lineage-in-dbt)
+- [After running the DAG successfully](#after-running-the-dag-successfully)
+- [Power BI Dashboard](#power-bi-dashboard)
+- [Video → Demo](#video--demo)
+- [How to Run](#how-to-run)
+
 -----
-## Data Source → Kaggle 
-- [Download Dataset](https://www.kaggle.com/datasets/hrishitpatil/flight-data-2024)
+## Data Source 
+- [Kaggle Dataset: Download Flight Data 2024](https://www.kaggle.com/datasets/hrishitpatil/flight-data-2024)
 ----
 ## Data dictionary about source
 
@@ -94,8 +109,8 @@
  ![System Architecture photo](images/filter_1.png)
  ![System Architecture photo](images/filter_2.png)
 ----------
-## Video → Demo 
-- [**Watch !**](https://drive.google.com/file/d/1ZIMkiO6oI8pYtKiDrz6ulDrcb4gHyuyV/view)
+## Video Demo 
+- [**Watch the Demo!**](https://drive.google.com/file/d/1ZIMkiO6oI8pYtKiDrz6ulDrcb4gHyuyV/view)
 ----------
 ## How to Run
 -----------
