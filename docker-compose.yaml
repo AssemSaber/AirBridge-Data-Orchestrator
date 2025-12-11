@@ -337,96 +337,96 @@ services:
   #     - hive-metastore
   # --------------------spark-----------
   
-  spark-master:
-    image: bitnami/spark:3.3.0
-    user: root
-    environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_MASTER_WEBUI_PORT=8081
-      - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop # to read from hdfs
-    ports:
-      - "8082:8081"
-      - "7077:7077"
+  # spark-master:
+  #   image: bitnami/spark:3.3.0
+  #   user: root
+  #   environment:
+  #     - SPARK_MODE=master
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_SSL_ENABLED=no
+  #     - SPARK_MASTER_WEBUI_PORT=8081
+  #     - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop # to read from hdfs
+  #   ports:
+  #     - "8082:8081"
+  #     - "7077:7077"
     
-    volumes:
-      - ./sparkJops:/opt/airflow/sparkJops  
-      - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml  # bindmount to have metastore of hive
-      - spark-data:/bitnami
-      - ./apps:/opt/spark-apps
-      - ./data:/opt/spark-data
-      - ivy-cache:/root/.ivy2  #  when Spark downloads jars, they’re saved to your host machine (./ivy-cache), so we need to save them
-      - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  # when enabled, u work with only hdfs not local host
+  #   volumes:
+  #     - ./sparkJops:/opt/airflow/sparkJops  
+  #     - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml  # bindmount to have metastore of hive
+  #     - spark-data:/bitnami
+  #     - ./apps:/opt/spark-apps
+  #     - ./data:/opt/spark-data
+  #     - ivy-cache:/root/.ivy2  #  when Spark downloads jars, they’re saved to your host machine (./ivy-cache), so we need to save them
+  #     - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  # when enabled, u work with only hdfs not local host
 
-                            # keep in mind use only data in hdfs only.!!!
-                            #  bindmount to use hadoop hdfs without using # hdfs://namenode:8020, so u can use that hdfs://namenode:8020/staging_area/customers.csv or /staging_area/customers.csv
-                            # if it is disabled u should use full path hdfs://namenode:8020/path or imagine you're in the spark conatiner like /opt/spark-data/path
-                            # applying this also with worker & jupyter
-    networks:
-      - airflow
-    # command: ["/opt/airflow/sparkJops/spark.sh"]
+  #                           # keep in mind use only data in hdfs only.!!!
+  #                           #  bindmount to use hadoop hdfs without using # hdfs://namenode:8020, so u can use that hdfs://namenode:8020/staging_area/customers.csv or /staging_area/customers.csv
+  #                           # if it is disabled u should use full path hdfs://namenode:8020/path or imagine you're in the spark conatiner like /opt/spark-data/path
+  #                           # applying this also with worker & jupyter
+  #   networks:
+  #     - airflow
+  #   # command: ["/opt/airflow/sparkJops/spark.sh"]
 
-  spark-worker:
-    image: bitnami/spark:3.3.0
-    user: root
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=2G
-      - SPARK_WORKER_CORES=2
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop # to read from hdfs
+  # spark-worker:
+  #   image: bitnami/spark:3.3.0
+  #   user: root
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #     - SPARK_WORKER_MEMORY=2G
+  #     - SPARK_WORKER_CORES=2
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_SSL_ENABLED=no
+  #     - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop # to read from hdfs
       
-    volumes:
-      - ./sparkJops:/opt/airflow/sparkJops  # u make map [current dir including docker compose, which test...]/sparkJops with that path of container
-      - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml
-      - spark-data:/bitnami
-      - ./apps:/opt/spark-apps
-      - ./data:/opt/spark-data
-      - ivy-cache:/root/.ivy2 ##  when Spark downloads jars during spark-submit, they’re saved to your host machine (./ivy-cache), so we need to save them
-      - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  # bindmount to use hadoop hdfs
+  #   volumes:
+  #     - ./sparkJops:/opt/airflow/sparkJops  # u make map [current dir including docker compose, which test...]/sparkJops with that path of container
+  #     - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml
+  #     - spark-data:/bitnami
+  #     - ./apps:/opt/spark-apps
+  #     - ./data:/opt/spark-data
+  #     - ivy-cache:/root/.ivy2 ##  when Spark downloads jars during spark-submit, they’re saved to your host machine (./ivy-cache), so we need to save them
+  #     - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  # bindmount to use hadoop hdfs
       
-    depends_on:
-      - spark-master
-    networks:
-      - airflow  
+  #   depends_on:
+  #     - spark-master
+  #   networks:
+  #     - airflow  
 
-    # command: ["/opt/airflow/sparkJops/spark.sh"]
+  #   # command: ["/opt/airflow/sparkJops/spark.sh"]
 
-  ## jupyter for spark ##
+  # ## jupyter for spark ##
 
 
-  jupyter:
-    image: jupyter/pyspark-notebook:latest
-    container_name: jupyter-spark
-    ports:
-      - "8888:8888"
+  # jupyter:
+  #   image: jupyter/pyspark-notebook:latest
+  #   container_name: jupyter-spark
+  #   ports:
+  #     - "8888:8888"
 
-    environment:
-      - JUPYTER_TOKEN=spark123  # Password for access
-      - HIVE_METASTORE_URI=thrift://hive-metastore:9083  # for hive
-      - SPARK_CONF_DIR=/home/jovyan/.spark-conf   # for hive
-      - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop  # to read from hdfs
-    volumes:     # make /home/jovyan/name
-      - ./notebooks:/home/jovyan/work  # Mount your notebooks directory
-      - ./sparkJops:/home/jovyan/sparkJops  # Share Spark jobs with Airflow or seeing what u write in sparkJops created by sparkContainer
-      - ./data:/home/jovyan/data  # Share data directory or seeing what make in data folder created by spark container
-      - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml   # to mount to  thrift://hive-metastore:9083
-      - ./hive_meta/conf/hive-site.xml:/home/jovyan/.spark-conf/hive-site.xml  # to mount to  thrift://hive-metastore:9083
+  #   environment:
+  #     - JUPYTER_TOKEN=spark123  # Password for access
+  #     - HIVE_METASTORE_URI=thrift://hive-metastore:9083  # for hive
+  #     - SPARK_CONF_DIR=/home/jovyan/.spark-conf   # for hive
+  #     - HADOOP_CONF_DIR=/opt/bitnami/spark/conf/hadoop  # to read from hdfs
+  #   volumes:     # make /home/jovyan/name
+  #     - ./notebooks:/home/jovyan/work  # Mount your notebooks directory
+  #     - ./sparkJops:/home/jovyan/sparkJops  # Share Spark jobs with Airflow or seeing what u write in sparkJops created by sparkContainer
+  #     - ./data:/home/jovyan/data  # Share data directory or seeing what make in data folder created by spark container
+  #     - ./hive_meta/conf/hive-site.xml:/opt/bitnami/spark/conf/hive-site.xml   # to mount to  thrift://hive-metastore:9083
+  #     - ./hive_meta/conf/hive-site.xml:/home/jovyan/.spark-conf/hive-site.xml  # to mount to  thrift://hive-metastore:9083
 
-      - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  #  bindmount using hdfs that allowing using only hdfs & u may stop to use local
+  #     - ./hadoop-conf:/opt/bitnami/spark/conf/hadoop  #  bindmount using hdfs that allowing using only hdfs & u may stop to use local
 
-    depends_on: 
-      - spark-master
-      - spark-worker
-    networks:
-      - airflow
+  #   depends_on: 
+  #     - spark-master
+  #     - spark-worker
+  #   networks:
+  #     - airflow
   ##adding kafka ## 
 
   zookeeper:
