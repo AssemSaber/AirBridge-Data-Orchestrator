@@ -82,8 +82,25 @@
     - #### CDC feeds data to Flink, which performs streaming transformations and analytics.
     - #### Processed real-time data is stored in Postgres for fast querying.
     - #### Grafana dashboards visualize the data to detect unusual patterns, such as increases in flight cancellations or the reasons for flight delays
-    - Flow: MySQL CDC → Flink → Postgres → Grafana
- 
+    - #### Flow: MySQL CDC → Flink → Postgres → Grafana
+------
+## Key Features
+- ### 1) Failures :
+   - ### Dead Letter Queue (DLQ): Handles messages that cannot be processed, including schema changes or invalid data.
+   - ### Kafka Retries: Messages are retried at least three times to ensure delivery.
+   - ### Airflow Task Retries: Failed tasks are automatically retried according to the configured retry policy.
+- ### 2) Data Quality Framework using dbt :
+    - ### **Tests**:
+        - ###  Verified that primary keys are unique.
+        - ### Ensured valid relationships between tables (referential integrity).
+        - ### Checked that columns contain only specific values (low cardinality).
+        - ### Validated that certain numeric columns contain only positive values.
+    - ### **Freshness/Timeliness**:
+        - ### If no data is received within 4 hours, a warning is triggered; if no data arrives within 24 hours, an error is raised. Any changes in the source schema are handled via the Dead Letter Queue (DLQ).
+- ### 3) Scalability & Fault Tolerance
+   - ### Kafka & CDC: Kafka handles high-throughput event streaming, enabling horizontal scaling. CDC ensures changes in source databases are captured reliably.
+   - ### Spark & Flink: Distributed processing frameworks that scale horizontally to handle large datasets and provide fault tolerance through task retries and checkpointing.
+   - ### S3 Bucket: Provides durable, highly available storage that can scale to store massive volumes of data.
 -------
 ## Data modeling
  ![System Architecture photo](images/modeling_flights.png)
