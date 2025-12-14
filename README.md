@@ -22,9 +22,6 @@
 - [Video → Demo](#video-demo)
 - [How to Run](#how-to-run)
 
------
-## Data Source 
-- [Kaggle Dataset: Download Flight Data 2024](https://www.kaggle.com/datasets/hrishitpatil/flight-data-2024)
 ----
 ## Data dictionary about source
 
@@ -66,6 +63,9 @@
 | security_delay      | Security delay in minutes                       |
 | late_aircraft_delay | Late aircraft delay in minutes                  |
 -----
+## Data Source 
+- [Kaggle Dataset: Download Flight Data 2024](https://www.kaggle.com/datasets/hrishitpatil/flight-data-2024)
+----
 ## <div>**Data platform**</div>
 
 ![System Architecture photo](images/data_platform_flight.png)
