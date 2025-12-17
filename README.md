@@ -190,7 +190,11 @@ create table flights(
   ```
   pip install mysql-connector-python
     ```
-- #### Assume you downloaded the data from Kaggle. Create a folder named data, then place the downloaded files inside it.
+- ### Assuming you have downloaded the data from Kaggle:
+    -  #### Create a folder named `data`.
+    -  #### Place the downloaded files inside the `data` folder.
+    -  #### Run the following command to import the data:
+  
 ```
  python3 sparkJops/import_mysql.py
 ```
