@@ -209,7 +209,10 @@ docker compose exec spark-master  spark-submit   --master spark://spark-master:7
 ```
 ---------
 
- #### Everything is on the cloud, so you need to reconfigure it yourself according to your personal information like access key, username, or password of snowflake configuration.
+ #### Setup AWS + SnowFlake
+
+ [**vv!**](SIC-GradP-KafkaSpark-S3-Snow_Docm.pdf)
+ 
 
 
 
