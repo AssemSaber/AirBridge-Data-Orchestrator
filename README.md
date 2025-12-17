@@ -205,12 +205,11 @@ localhost:8085
 
 ---------
 
- ## Setup AWS + SnowFlake
-### [**1) Knowing instructions to grant permissions from AWS**](SIC-GradP-KafkaSpark-S3-Snow_Docm.pdf)
+ ## Setup AWS + Snowflake
+### [**1) Cilck to know to grant permissions from AWS**](SIC-GradP-KafkaSpark-S3-Snow_Docm.pdf)
 
-
-### 2) Open snowFlake to run these ones
-- ### Establish extarnal storage as S3 bucket
+### 2) Open Snowflake to run the following steps:
+- ### we need to establish external storage using an S3 bucket
  - ### Keep in mind you should replace AWS_ACCOUNT_ID && ROLE_NAME in AWS
      
  ```
@@ -223,14 +222,17 @@ localhost:8085
     's3://kafka-staging-abdelrahman-2025/kafka/'
   );
 ```
-- ### Describe that to obtain STORAGE_AWS_IAM_USER_ARN && STORAGE_AWS_EXTERNAL_ID required in IAM Role Trust Policy of AWS
+- ###  You can obtain `STORAGE_AWS_IAM_USER_ARN` and `STORAGE_AWS_EXTERNAL_ID` required for the AWS IAM Role trust policy by running:
 
 ```
 DESC INTEGRATION s3_kafka_integration;
 ```
- - ### Get back to AWS and put them in IAM Role Trust Policy
+ - ### Return to AWS and add these values to the `IAM Role trust policy`.
+   
+-----------
 
-### Establish stage with external storage we created
+### Establish a stage using the external storage we created.
+
 ```
 create database GP;
 create schema GP.RAW;
@@ -240,9 +242,10 @@ CREATE OR REPLACE STAGE GP.RAW.kafka_stream
   FILE_FORMAT = parquet_format;
 ```
 
-### Create flights table for data as it coming is (raw data)
+### Create the flights table to store raw incoming data.
+
 ```
-CREATE OR REPLACE TABLE flights (
+CREATE OR REPLACE TABLE GP.RAW.flights (
     id INTEGER AUTOINCREMENT PRIMARY KEY, 
     year INTEGER,
     month INTEGER,
@@ -281,8 +284,29 @@ CREATE OR REPLACE TABLE flights (
     late_aircraft_delay NUMBER(10,2)
 );
 ```
+## Replace the AWS access key and secret key in the PySpark code located at `/sparkJobs/consumer.py`.
+#### Update that piece of code
 
-- #### run code pyspark code for structured streaming uploading to s3 bucket :
+```
+spark = SparkSession.builder \
+        .appName("KafkaSparkConsumer") \
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+        .config("spark.jars.packages",                    # keep in mind all of them written also in spark-submit              
+                "org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,"  
+                "io.delta:delta-core_2.12:2.2.0"         
+                "org.apache.commons:commons-pool2:2.12.0") \
+        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
+        .config("spark.hadoop.fs.s3a.access.key", "********") \ 
+        .config("spark.hadoop.fs.s3a.secret.key", "********") \
+        .config("spark.hadoop.fs.s3a.endpoint", "s3.eu-north-1.amazonaws.com") \
+        .config("spark.hadoop.fs.s3a.path.style.access", "true") \
+        .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
+        .config("spark.hadoop.fs.s3a.fast.upload", "true") \
+        .getOrCreate()
+```
+
+## Run code pyspark code for structured streaming uploading to s3 bucket :
 
 ```
 docker compose exec spark-master  spark-submit   --master spark://spark-master:7077   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.apache.commons:commons-pool2:2.12.0,io.delta:delta-core_2.12:2.2.0,org.apache.hadoop:hadoop-aws:3.3.6,com.amazonaws:aws-java-sdk-bundle:1.12.529   /opt/airflow/sparkJops/consumer.py
