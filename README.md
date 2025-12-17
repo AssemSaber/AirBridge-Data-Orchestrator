@@ -202,22 +202,91 @@ localhost:8085
 ```
 ![System Architecture photo](images/kafka-data.jpeg)
 
+
+---------
+
+ ## Setup AWS + SnowFlake
+### [**1) Knowing instructions to grant permissions from AWS**](SIC-GradP-KafkaSpark-S3-Snow_Docm.pdf)
+
+
+### 2) Open snowFlake to run these ones
+- ### Establish extarnal storage as S3 bucket
+ - ### Keep in mind you should replace AWS_ACCOUNT_ID && ROLE_NAME in AWS
+     
+ ```
+ CREATE OR REPLACE STORAGE INTEGRATION s3_kafka_integration
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = S3
+  ENABLED = TRUE
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::<AWS_ACCOUNT_ID>:role/<ROLE_NAME>'
+  STORAGE_ALLOWED_LOCATIONS = (
+    's3://kafka-staging-abdelrahman-2025/kafka/'
+  );
+```
+- ### Describe that to obtain STORAGE_AWS_IAM_USER_ARN && STORAGE_AWS_EXTERNAL_ID required in IAM Role Trust Policy of AWS
+
+```
+DESC INTEGRATION s3_kafka_integration;
+```
+ - ### Get back to AWS and put them in IAM Role Trust Policy
+
+### Establish stage with external storage we created
+```
+create database GP;
+create schema GP.RAW;
+CREATE OR REPLACE STAGE GP.RAW.kafka_stream
+  URL = 's3://kafka-staging-abdelrahman-2025/kafka/flights'
+  STORAGE_INTEGRATION = s3_kafka_integration
+  FILE_FORMAT = parquet_format;
+```
+
+### Create flights table for data as it coming is (raw data)
+```
+CREATE OR REPLACE TABLE flights (
+    id INTEGER AUTOINCREMENT PRIMARY KEY, 
+    year INTEGER,
+    month INTEGER,
+    day_of_month INTEGER,
+    day_of_week INTEGER,
+    fl_date DATE,  
+    op_unique_carrier VARCHAR(20),
+    op_carrier_fl_num INTEGER,  
+    origin VARCHAR(10),
+    origin_city_name VARCHAR(255),
+    origin_state_nm VARCHAR(255),
+    dest VARCHAR(10),
+    dest_city_name VARCHAR(255),
+    dest_state_nm VARCHAR(255),
+    crs_dep_time TIME, 
+    dep_time TIME,
+    dep_delay NUMBER(10,2), 
+    taxi_out NUMBER(10,2),
+    wheels_off TIME,
+    wheels_on TIME,
+    taxi_in NUMBER(10,2),
+    crs_arr_time TIME,
+    arr_time TIME,
+    arr_delay NUMBER(10,2),
+    cancelled INTEGER,
+    cancellation_code VARCHAR(10),
+    diverted INTEGER,
+    crs_elapsed_time NUMBER(10,2),
+    actual_elapsed_time NUMBER(10,2),
+    air_time NUMBER(10,2),
+    distance NUMBER(10,2),
+    carrier_delay NUMBER(10,2), 
+    weather_delay NUMBER(10,2),
+    nas_delay NUMBER(10,2),
+    security_delay NUMBER(10,2),
+    late_aircraft_delay NUMBER(10,2)
+);
+```
+
 - #### run code pyspark code for structured streaming uploading to s3 bucket :
 
 ```
 docker compose exec spark-master  spark-submit   --master spark://spark-master:7077   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.apache.commons:commons-pool2:2.12.0,io.delta:delta-core_2.12:2.2.0,org.apache.hadoop:hadoop-aws:3.3.6,com.amazonaws:aws-java-sdk-bundle:1.12.529   /opt/airflow/sparkJops/consumer.py
 ```
----------
-
- #### Setup AWS + SnowFlake
-
- [**vv!**](SIC-GradP-KafkaSpark-S3-Snow_Docm.pdf)
- 
-
-
-
-
-
 
 
 
