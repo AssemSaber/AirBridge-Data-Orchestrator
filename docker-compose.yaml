@@ -530,43 +530,6 @@ services:
       - airflow 
 
 
-  # redis:
-  #   image: redis/redis-stack-server:latest    # after opening the container, redis-cli to allow you to write commands >>> docker exec -it hast redis-cli instead of shell 
-  #   container_name: redis-stack-server 
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6379:6379" # The standard Redis port
-  #   networks:
-  #     - redis-net
-  #   volumes:
-  #     - redis_data:/data
-
-  # redis-insight:
-  #   image: redislabs/redisinsight:latest
-  #   container_name: redis-insight
-  #   restart: unless-stopped
-  #   ports:namenode
-  #     - "8001:8001" # The RedisInsight web UI port
-  #   networks:
-  #     - redis-net
-  #   depends_on:
-  #     - redis
-
-  # cassandra:
-  #   image: cassandra:4.1
-  #   container_name: cassandra
-  #   ports:
-  #     - "9042:9042"   # Cassandra CQL
-  #   environment:
-  #     - CASSANDRA_CLUSTER_NAME=SparkCluster
-  #   healthcheck:
-  #     test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-  #   volumes:
-  #     - ./cassandra-init.cql:/init.cql   # preparation the container with tables after it is running up  
-  #     - cassandra_data:/var/lib/cassandra  # persistent storage
 
   grafana:  # (dashboard for monitoring)
     image: grafana/grafana:latest
@@ -685,58 +648,6 @@ services:
           memory: 2g
     volumes:
     - hive-metastore-data:/var/lib/postgresql/data 
-
-  # nifi:
-  #   image: apache/nifi:1.23.2
-  #   environment:
-  #     SINGLE_USER_CREDENTIALS_USERNAME: admin
-  #     SINGLE_USER_CREDENTIALS_PASSWORD: admin
-  #     NIFI_WEB_HTTP_PORT: 8080
-  #     NIFI_WEB_HTTPS_PORT: ''
-  #   ports:
-  #     - "8086:8080"
-  #   volumes:
-    
-  #     - nifi_flow:/opt/nifi/nifi-current/flow
-  #     - nifi_conf:/opt/nifi/nifi-current/conf
-  #     - ./jdbc_drivers:/opt/nifi/nifi-current/jdbc
-  #     - ./hadoop-conf:/opt/nifi/nifi-current/hadoop-conf  # to mount to hdfs 
-  #     - ./data:/opt/spark-data
-  #           # Hadoop Configuration Resources: for any processor in nifi
-  #           #  /opt/nifi/nifi-current/hadoop-conf/core-site.xml,/opt/nifi/nifi-current/hadoop-conf/hdfs-site.xml
-  #   depends_on:
-  #     - namenode
-  #     - datanode
-  #   networks:
-  #     - airflow
-  
-  # flume:
-  #   build:
-  #     context: .
-  #     dockerfile: DockerFile.flume
-  #   container_name: flume-agent
-  #   volumes:
-  #     - ./data:/data                    # For input data
-  #     - ./flume-conf:/opt/flume/conf    # Custom configurations
-  #     - ./hadoop-conf:/etc/hadoop/conf  # Hadoop configuration for HDFS
-  #     - flume-logs:/var/log/flume
-  #     - ./flume/plugins:/opt/flume/plugins  # For custom plugins if needed
-  #   ports:
-  #     - '44:44444'  # to bindmount netcat from container to localhost with this port number if using net cat agent
-  #   environment:
-  #     - HADOOP_CONF_DIR=/etc/hadoop/conf
-  #     - FLUME_CONF_DIR=/opt/flume/conf
-  #   depends_on:
-  #     - namenode
-  #     - datanode
-  #   networks:
-  #     - airflow
-  #   command: >
-  #     bash -c "
-  #       cp /etc/hadoop/conf/* /opt/flume/conf/ &&
-  #       /opt/flume/bin/flume-ng agent -n agent1 -c /opt/flume/conf -f /opt/flume/conf/flume.conf -Dflume.root.logger=INFO,console
-  #     "
-  #   restart: unless-stopped
 
 
   # Flink JobManager
