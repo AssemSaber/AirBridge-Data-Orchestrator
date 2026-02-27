@@ -71,6 +71,7 @@
 ![System Architecture photo](images/data_platform_flight.png)
 
 ## Architecture Overview
+### The AirBridge Data Orchestrator utilizes a Lambda-style architecture to balance high-volume processing with sub-second analytical latency. The system is **containerized** using Docker and **orchestrated by Apache Airflow**.
 ## The pipeline consists of two parallel flows:
 - ### 1) Batch/Archival Pipeline (for AI/analytics and cost-efficiency)
     - #### Change Data Capture (CDC) is used on a MySQL database to capture every transaction log in near real-time.
