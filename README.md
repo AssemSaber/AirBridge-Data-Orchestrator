@@ -75,7 +75,7 @@
 ## The pipeline consists of two parallel flows:
 - ### 1) Batch/Archival Pipeline (for AI/analytics and cost-efficiency)
     - #### Change Data Capture (CDC) is used on a MySQL database to capture every transaction log in near real-time.
-    - #### Captured records, which can reach up to 1 million per second, are forwarded to S3 rather than writing directly to Snowflake, reducing write costs.
+    - #### Captured records, which can reach up to 1 million per minute, are forwarded to S3 rather than writing directly to Snowflake, reducing write costs.
     - #### Data stored in S3 can later be used by the AI team or archived for compliance purposes.
     - #### The pipeline connects to Snowflake, enabling stakeholders to run business intelligence queries and generate insights.
     - #### Flow: MySQL CDC → S3 → Snowflake → Power BI
