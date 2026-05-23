@@ -68,7 +68,7 @@
 ----
 ## <div>**Data platform**</div>
 
-![System Architecture photo](images/flight_platform.drawio.svg)
+![System Architecture photo](images/SIC_GP_lastVersion-flights_2.gif)
 
 ## Architecture Overview
 ### The AirBridge Data Orchestrator utilizes a Lambda-style architecture to balance high-volume processing with sub-second analytical latency. The system is **containerized** using Docker and **orchestrated by Apache Airflow**.
